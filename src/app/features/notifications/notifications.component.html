@@ -1,0 +1,17 @@
+<div class="notifications-container">
+  <div class="header">
+    <h2>Thông báo</h2>
+    <div class="actions">
+      <button (click)="markAllRead()">Đánh dấu đã đọc</button>
+    </div>
+  </div>
+
+  <ul class="list">
+    <li *ngFor="let n of notifications" [class.read]="n.read">
+      <div class="title">{{ n.title }}</div>
+      <div class="meta">{{ n.time }}</div>
+      <button class="remove" (click)="remove(n.id)">Xóa</button>
+    </li>
+  </ul>
+  <div *ngIf="notifications.length === 0">Không có thông báo</div>
+</div>

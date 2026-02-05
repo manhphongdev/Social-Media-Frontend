@@ -1,0 +1,60 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h2>Tạo tài khoản</h2>
+    <p class="subtitle">Tham gia cộng đồng của chúng tôi ngay hôm nay!</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <!-- Full width fields -->
+      <label class="full-width">
+        Họ & Tên
+        <input formControlName="name" type="text" placeholder="Nguyễn Văn A" />
+      </label>
+
+      <label class="full-width">
+        Email
+        <input formControlName="email" type="email" placeholder="your@email.com" autocomplete="email" />
+      </label>
+
+      <!-- Two column layout -->
+      <div class="form-row">
+        <label>
+          Mật khẩu
+          <input formControlName="password" type="password" placeholder="••••••••" autocomplete="new-password" />
+        </label>
+
+        <label>
+          Xác nhận mật khẩu
+          <input formControlName="confirmPassword" type="password" placeholder="••••••••" autocomplete="new-password" />
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>
+          Ngày sinh
+          <input formControlName="dateOfBirth" type="date" autocomplete="dateOfBirth" />
+        </label>
+
+        <label>
+          Giới tính
+          <select formControlName="gender">
+            <option value="" disabled selected>Chọn giới tính</option>
+            <option value="male">Nam</option>
+            <option value="female">Nữ</option>
+            <option value="other">Khác</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="submit" [disabled]="form.invalid">
+          Tạo tài khoản
+        </button>
+      </div>
+    </form>
+
+    <p class="muted">
+      Đã có tài khoản?
+      <a routerLink="/login">Đăng nhập ngay</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,133 @@
+<div class="home-container">
+  <header class="home-header">
+    <h1>Bảng tin</h1>
+  </header>
+
+  <!-- COMPOSER -->
+  <form [formGroup]="postForm" class="composer">
+    <textarea formControlName="content" placeholder="Bạn đang nghĩ gì?"></textarea>
+
+    <!-- File Previews -->
+    <div class="file-previews" *ngIf="filePreviews.length > 0">
+      <div *ngFor="let preview of filePreviews; let i = index" class="file-preview-item">
+        <img *ngIf="preview.type === 'image'" [src]="preview.preview" alt="Preview" />
+        <div *ngIf="preview.type !== 'image'" class="file-icon">
+          <span *ngIf="preview.type === 'video'">🎥</span>
+          <span *ngIf="preview.type !== 'video' && preview.type !== 'image'">📄</span>
+          <span class="file-name">{{ preview.file.name }}</span>
+        </div>
+        <button type="button" class="remove-file-btn" (click)="removeFile(i)">✕</button>
+      </div>
+    </div>
+
+    <!-- Composer Actions -->
+    <div class="composer-actions">
+      <div class="action-left">
+        <!-- File Upload Button -->
+        <label class="upload-btn">
+          <input type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx" (change)="onFileSelected($event)"
+            hidden />
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>Ảnh/Video</span>
+        </label>
+
+        <!-- Privacy Selector -->
+        <div class="privacy-selector">
+          <select formControlName="privacy">
+            <option value="public">🌐 Công khai</option>
+            <option value="friends">👥 Bạn bè</option>
+            <option value="private">🔒 Riêng tư</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" (click)="addPost()" [disabled]="postForm.invalid" class="post-btn">
+        Đăng bài
+      </button>
+    </div>
+  </form>
+
+  <!-- FEED -->
+  <section class="feed">
+    <div *ngFor="let post of posts" class="post">
+      <!-- Post Meta Header -->
+      <div class="post-header">
+        <div class="avatar-placeholder">
+          {{ post.author ? post.author[0] : 'U' }}
+        </div>
+        <div>
+          <div class="post-author">{{ post.author }}</div>
+          <div class="post-meta">
+            {{ post.time }} ·
+            <span class="privacy-badge">
+              {{ getPrivacyIcon(post.privacy) }} {{ getPrivacyLabel(post.privacy) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="post-content">{{ post.content }}</div>
+
+      <!-- Attachments -->
+      <div class="post-attachments" *ngIf="post.attachments && post.attachments.length > 0">
+        <div *ngFor="let attachment of post.attachments" class="attachment-item">
+          <img *ngIf="attachment.type === 'image'" [src]="attachment.url" [alt]="attachment.name" />
+          <video *ngIf="attachment.type === 'video'" [src]="attachment.url" controls></video>
+          <div *ngIf="attachment.type === 'document'" class="document-attachment">
+            📄 {{ attachment.name }}
+          </div>
+        </div>
+      </div>
+
+      <!-- REACTIONS -->
+      <div class="reactions">
+        <button (click)="toggleReaction(post, 'like')" [class.active]="likedPostIds.has(post.id)">
+          👍 {{ post.reactions.like }} Thích
+        </button>
+        <button (click)="toggleReaction(post, 'love')" [class.active]="lovedPostIds.has(post.id)">
+          ❤️ {{ post.reactions.love }} Yêu thích
+        </button>
+      </div>
+
+      <!-- COMMENTS -->
+      <div class="comments">
+        <ng-container *ngFor="let c of post.comments">
+          <ng-container *ngTemplateOutlet="commentTree; context: { $implicit: c }"></ng-container>
+        </ng-container>
+
+        <!-- Use ng-template for recursive comments -->
+        <ng-template #commentTree let-comment>
+          <div class="comment">
+            <div class="comment-body">
+              <strong>{{ comment.author }}</strong> {{ comment.content }}
+            </div>
+
+            <!-- nested replies -->
+            <div class="replies" *ngIf="comment.replies?.length">
+              <ng-container *ngFor="let r of comment.replies">
+                <ng-container *ngTemplateOutlet="commentTree; context: { $implicit: r }"></ng-container>
+              </ng-container>
+            </div>
+
+            <!-- reply form for this comment -->
+            <form [formGroup]="getReplyForm(comment.id)" class="reply-form">
+              <input formControlName="content" placeholder="Phản hồi..." />
+              <button type="button" (click)="addReply(comment)">Trả lời</button>
+            </form>
+          </div>
+        </ng-template>
+
+        <!-- ADD COMMENT FORM -->
+        <form [formGroup]="getCommentForm(post.id)" class="comment-form">
+          <input formControlName="content" placeholder="Viết bình luận..." />
+          <button type="button" (click)="addComment(post)">Gửi</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

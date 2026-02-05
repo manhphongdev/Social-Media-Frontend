@@ -1,0 +1,29 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h2>Đăng nhập</h2>
+    <p class="subtitle">Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>
+        Email
+        <input formControlName="email" type="email" placeholder="your@email.com" autocomplete="email" />
+      </label>
+
+      <label>
+        Mật khẩu
+        <input formControlName="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+      </label>
+
+      <div class="actions">
+        <button type="submit" [disabled]="form.invalid">
+          Đăng nhập
+        </button>
+      </div>
+    </form>
+
+    <p class="muted">
+      Chưa có tài khoản?
+      <a routerLink="/register">Đăng ký ngay</a>
+    </p>
+  </div>
+</div>

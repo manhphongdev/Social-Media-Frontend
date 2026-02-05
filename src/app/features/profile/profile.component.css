@@ -1,0 +1,6 @@
+.profile-container { max-width:800px; margin:20px auto; padding:0 16px }
+.profile-card { background:#fff; border:1px solid rgba(15,23,42,0.04); padding:20px; border-radius:12px; text-align:center }
+.avatar { width:96px; height:96px; border-radius:50%; margin:0 auto 12px; background:linear-gradient(135deg,#60a5fa,#7c3aed) }
+.bio { color:#6b7280 }
+.actions { margin-top:12px }
+.btn { padding:8px 12px; border-radius:8px; background:#2563eb; color:#fff; border:0 }

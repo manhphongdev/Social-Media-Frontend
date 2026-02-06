@@ -3,6 +3,16 @@
     <h2>Tạo tài khoản</h2>
     <p class="subtitle">Tham gia cộng đồng của chúng tôi ngay hôm nay!</p>
 
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="submit()">
       <!-- Full width fields -->
       <label class="full-width">
@@ -38,16 +48,17 @@
           Giới tính
           <select formControlName="gender">
             <option value="" disabled selected>Chọn giới tính</option>
-            <option value="male">Nam</option>
-            <option value="female">Nữ</option>
-            <option value="other">Khác</option>
+            <option value="MALE">Nam</option>
+            <option value="FEMALE">Nữ</option>
+            <option value="OTHER">Khác</option>
           </select>
         </label>
       </div>
 
       <div class="actions">
-        <button type="submit" [disabled]="form.invalid">
-          Tạo tài khoản
+        <button type="submit" [disabled]="form.invalid || loading">
+          <span *ngIf="loading">Đang xử lý...</span>
+          <span *ngIf="!loading">Tạo tài khoản</span>
         </button>
       </div>
     </form>

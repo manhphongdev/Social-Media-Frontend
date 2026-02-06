@@ -1,10 +1,212 @@
 <div class="profile-container">
-  <div class="profile-card">
-    <div class="avatar"></div>
-    <h2>{{ user.name }}</h2>
-    <p class="bio">{{ user.bio }}</p>
-    <div class="actions">
-      <button class="btn">Chỉnh sửa hồ sơ</button>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Đang tải thông tin...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <p class="error-message">{{ error }}</p>
+    <button class="btn-retry" (click)="loadProfile()">Thử lại</button>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="profile && !loading" class="profile-content">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="cover-photo"></div>
+      <div class="profile-info">
+        <div class="avatar-section">
+          <!-- Current Avatar or Preview -->
+          <div class="avatar-wrapper">
+            <div class="avatar" *ngIf="!profile.avatarUrl && !avatarPreview && !loadingPreview">
+              {{ getAvatarInitial() }}
+            </div>
+            <img *ngIf="profile.avatarUrl && !avatarPreview && !loadingPreview" [src]="profile.avatarUrl" alt="Avatar"
+              class="avatar-img" />
+            <img *ngIf="avatarPreview && !loadingPreview" [src]="avatarPreview" alt="Preview"
+              class="avatar-img preview" />
+
+            <!-- Loading Preview Spinner -->
+            <div class="avatar-loading" *ngIf="loadingPreview">
+              <div class="spinner-small"></div>
+              <p>Đang xử lý...</p>
+            </div>
+
+            <!-- Upload Button Overlay -->
+            <button class="avatar-upload-btn" (click)="triggerFileInput()" *ngIf="!avatarPreview && !loadingPreview">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+            </button>
+
+            <!-- Upload Action Buttons (when preview is shown) -->
+            <div class="avatar-actions" *ngIf="avatarPreview">
+              <button class="btn-upload" (click)="uploadAvatar()" [disabled]="uploadingAvatar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {{ uploadingAvatar ? 'Đang tải...' : 'Lưu' }}
+              </button>
+              <button class="btn-cancel" (click)="cancelAvatarUpload()" [disabled]="uploadingAvatar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Hủy
+              </button>
+            </div>
+          </div>
+
+          <!-- Hidden File Input -->
+          <input type="file" id="avatarInput" accept="image/*" (change)="onAvatarSelected($event)"
+            style="display: none;" />
+        </div>
+        <div class="user-details">
+          <h1 class="user-name">{{ profile.name }}</h1>
+          <p class="user-id">ID: {{ profile.id }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Details Card -->
+    <!-- Profile Details Card -->
+    <div class="profile-card">
+      <div class="card-header">
+        <h2>Thông tin cá nhân</h2>
+        <button class="btn-edit" (click)="enterEditMode()" *ngIf="!isEditMode">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Chỉnh sửa
+        </button>
+      </div>
+
+      <!-- VIEW MODE -->
+      <div class="view-mode" *ngIf="!isEditMode">
+        <div class="bio-section" *ngIf="profile.bio">
+          <h3>Giới thiệu</h3>
+          <p>{{ profile.bio }}</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div class="info-content">
+              <span class="info-label">Họ và tên</span>
+              <span class="info-value">{{ profile.name }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="info-content">
+              <span class="info-label">Ngày sinh</span>
+              <span class="info-value">{{ getFormattedDate(profile.dateOfBirth) }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5.52 19c.64-2.2 1.84-3 3.22-3h6.52c1.38 0 2.58.8 3.22 3"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+                <circle cx="12" cy="12" r="10"></circle>
+              </svg>
+            </div>
+            <div class="info-content">
+              <span class="info-label">Giới tính</span>
+              <span class="info-value">{{ getGenderText(profile.gender) }}</span>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="profile.email">
+            <div class="info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div class="info-content">
+              <span class="info-label">Email</span>
+              <span class="info-value">{{ profile.email }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDIT MODE -->
+      <form [formGroup]="editForm" (ngSubmit)="saveProfile()" class="edit-form" *ngIf="isEditMode">
+
+        <div class="form-group">
+          <label for="name">Họ và tên <span class="required">*</span></label>
+          <input type="text" id="name" formControlName="name" placeholder="Nhập họ tên của bạn"
+            [class.invalid]="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+          <div class="error-msg" *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+            Vui lòng nhập họ tên (tối thiểu 2 ký tự)
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Giới thiệu</label>
+          <textarea id="bio" formControlName="bio" rows="3" placeholder="Viết đôi dòng về bản thân..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dateOfBirth">Ngày sinh</label>
+            <input type="date" id="dateOfBirth" formControlName="dateOfBirth">
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Giới tính</label>
+            <select id="gender" formControlName="gender">
+              <option value="">Chọn giới tính</option>
+              <option value="MALE">Nam</option>
+              <option value="FEMALE">Nữ</option>
+              <option value="OTHER">Khác</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel-edit" (click)="cancelEdit()" [disabled]="savingProfile">Hủy</button>
+          <button type="submit" class="btn-save" [disabled]="editForm.invalid || savingProfile">
+            <div class="spinner-tiny" *ngIf="savingProfile"></div>
+            {{ savingProfile ? 'Đang lưu...' : 'Lưu thay đổi' }}
+          </button>
+        </div>
+      </form>
+
     </div>
   </div>
 </div>

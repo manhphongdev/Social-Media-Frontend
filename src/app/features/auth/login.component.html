@@ -3,6 +3,16 @@
     <h2>Đăng nhập</h2>
     <p class="subtitle">Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.</p>
 
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="submit()">
       <label>
         Email
@@ -15,8 +25,9 @@
       </label>
 
       <div class="actions">
-        <button type="submit" [disabled]="form.invalid">
-          Đăng nhập
+        <button type="submit" [disabled]="form.invalid || loading">
+          <span *ngIf="loading">Đang xử lý...</span>
+          <span *ngIf="!loading">Đăng nhập</span>
         </button>
       </div>
     </form>

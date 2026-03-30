@@ -1,12 +1,14 @@
-import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {NgModule, provideBrowserGlobalErrorListeners} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS} from '@angular/common/http';
 
-import { AppRoutingModule } from './app-routing-module';
-import { App } from './app';
-import { HeaderComponent } from './shared/header/header.component';
-import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
+import {AppRoutingModule} from './app-routing-module';
+import {App} from './app';
+import {HeaderComponent} from './shared/header/header.component';
+import {CredentialsInterceptor} from './interceptors/credentials.interceptor';
+import {AuthInterceptor} from './interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -14,6 +16,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule,
     AppRoutingModule,
     HeaderComponent
   ],
@@ -33,4 +37,5 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
   ],
   bootstrap: [App]
 })
-export class AppModule { }
+export class AppModule {
+}

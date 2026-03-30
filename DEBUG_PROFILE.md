@@ -5,16 +5,20 @@
 ### 1. Mở Chrome DevTools (F12)
 
 ### 2. Tab Console
+
 Kiểm tra các log messages:
+
 - `🔍 Loading profile...` - Request đã được gửi
 - `📌 Access Token: EXISTS/MISSING` - Token có tồn tại không?
 - `✅ Profile loaded successfully` - Success
 - `❌ Error loading profile` - Có lỗi
 
 ### 3. Tab Network
+
 Tìm request: `profile/me`
 
 **Request Headers - Phải có:**
+
 ```
 Authorization: Bearer eyJ0eXAiOi...
 ```
@@ -23,6 +27,7 @@ Authorization: Bearer eyJ0eXAiOi...
 → AuthInterceptor chưa hoạt động hoặc không có token
 
 **Response:**
+
 - Status 200: OK → Check response body
 - Status 401: Unauthorized → Token invalid/expired
 - Status 0 or Failed: CORS/Network error
@@ -30,36 +35,46 @@ Authorization: Bearer eyJ0eXAiOi...
 ### 4. Common Issues & Solutions
 
 #### Issue #1: CORS Error
+
 ```
 Access to XMLHttpRequest blocked by CORS policy
 ```
+
 **Solution:** Backend cần cấu hình CORS:
+
 ```java
 .allowedOrigins("http://localhost:4200")
 .allowCredentials(true)
 ```
 
 #### Issue #2: No Authorization Header
+
 **Check localStorage:**
+
 ```javascript
 localStorage.getItem('accessToken') // Phải có value
 ```
 
-**Solution:** 
+**Solution:**
+
 - Login lại để lấy token mới
 - Check AuthInterceptor đã được register chưa
 
 #### Issue #3: Status 401 Unauthorized
+
 Token hết hạn hoặc invalid
 
 **Solution:**
+
 - Logout và login lại
 - Check token expiry time
 
 #### Issue #4: Status 0 (Network Error)
+
 Backend không chạy hoặc wrong port
 
 **Solution:**
+
 - Check backend đang chạy ở port 8888
 - `curl http://localhost:8888/users/profile/me -H "Authorization: Bearer <token>"`
 
@@ -73,6 +88,7 @@ curl -X GET "http://localhost:8888/users/profile/me" \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "status": 200,
@@ -89,6 +105,7 @@ curl -X GET "http://localhost:8888/users/profile/me" \
 ### 6. Quick Checks
 
 **In Console, run:**
+
 ```javascript
 // Check token
 console.log('Token:', localStorage.getItem('accessToken'));

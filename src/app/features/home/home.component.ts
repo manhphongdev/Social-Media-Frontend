@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Post, Comment, Attachment, PrivacyMode } from '../../models/post.model';
+import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Post, PostPrivacy} from '../../models/post.model';
+import {PostService, CreatePostRequest} from '../../services/post.service';
+import {ReactionService, ReactionType} from '../../services/reaction.service';
 
 @Component({
   selector: 'app-home',
@@ -10,24 +12,59 @@ import { Post, Comment, Attachment, PrivacyMode } from '../../models/post.model'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   postForm: FormGroup;
+  // commentForms and replyForms placeholders for future use
   commentForms = new Map<number, FormGroup>();
   replyForms = new Map<number, FormGroup>();
 
   posts: Post[] = [];
-  // track reactions by current user (simple client-side tracking)
-  likedPostIds = new Set<number>();
-  lovedPostIds = new Set<number>();
 
   // File upload handling
   selectedFiles: File[] = [];
   filePreviews: { file: File; preview: string; type: string }[] = [];
 
-  constructor(private fb: FormBuilder) {
+  // Loading states
+  creatingPost = false;
+  loadingPosts = false;
+  error = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private postService: PostService,
+    private reactionService: ReactionService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.postForm = this.fb.group({
-      content: ['', [Validators.required, Validators.maxLength(500)]],
-      privacy: ['public', Validators.required],
+      content: ['', [Validators.required, Validators.maxLength(3000)]],
+      privacy: ['PUBLIC', Validators.required],
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadPosts();
+  }
+
+  /**
+   * Load posts from API
+   */
+  loadPosts(): void {
+    this.loadingPosts = true;
+    this.error = '';
+    this.cdr.detectChanges();
+
+    this.postService.getPostsWithCursor(undefined, 20).subscribe({
+      next: (response) => {
+        this.posts = response.content;
+        this.loadingPosts = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading posts:', error);
+        this.error = 'Không thể tải bài viết. Vui lòng thử lại.';
+        this.loadingPosts = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -51,6 +88,7 @@ export class HomeComponent {
             preview: e.target?.result as string,
             type: fileType
           });
+          this.cdr.detectChanges();
         };
         reader.readAsDataURL(file);
       } else {
@@ -60,6 +98,7 @@ export class HomeComponent {
           preview: '',
           type: fileType
         });
+        this.cdr.detectChanges();
       }
     });
 
@@ -74,130 +113,120 @@ export class HomeComponent {
 
   // ---------- POST ----------
   addPost(): void {
-    if (this.postForm.invalid) return;
+    if (this.postForm.invalid) {
+      alert('Vui lòng nhập nội dung bài viết!');
+      return;
+    }
 
-    // Create attachments from selected files (simulation - in real app would upload to server)
-    const attachments: Attachment[] = this.selectedFiles.map((file, index) => ({
-      id: `${Date.now()}-${index}`,
-      type: this.getFileType(file),
-      url: this.filePreviews[index]?.preview || URL.createObjectURL(file),
-      name: file.name,
-      size: file.size,
-    }));
+    this.creatingPost = true;
+    this.error = '';
+    this.postForm.disable();
+    this.cdr.detectChanges();
 
-    const post: Post = {
-      id: Date.now(),
-      author: 'You',
-      content: this.postForm.value.content,
-      time: 'Vừa xong',
-      reactions: { like: 0, love: 0 },
-      comments: [],
-      privacy: this.postForm.value.privacy as PrivacyMode,
-      attachments: attachments.length > 0 ? attachments : undefined,
+    const request: CreatePostRequest = {
+      text: this.postForm.get('content')?.value,
+      privacy: this.postForm.get('privacy')?.value as PostPrivacy
     };
 
-    this.posts = [post, ...this.posts];
-    this.postForm.reset({ privacy: 'public' });
-    this.selectedFiles = [];
-    this.filePreviews = [];
+    console.log('Creating post:', request);
+    console.log('Files:', this.selectedFiles);
+
+    this.postService.createPost(request, this.selectedFiles).subscribe({
+      next: (response) => {
+        console.log('Post created successfully:', response);
+        this.creatingPost = false;
+
+        // Enable form and reset
+        this.postForm.enable();
+        this.postForm.reset({privacy: 'PUBLIC'});
+        this.selectedFiles = [];
+        this.filePreviews = [];
+
+        // Reload posts to show the new post
+        this.loadPosts();
+
+        alert('Đăng bài thành công!');
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error creating post:', error);
+        this.creatingPost = false;
+
+        // Enable form on error
+        this.postForm.enable();
+
+        this.error = error.error?.message || 'Không thể đăng bài. Vui lòng thử lại.';
+        alert(this.error);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
+  // ---------- REACTION ----------
+  toggleReaction(post: Post, type: string): void {
+    // TODO: Since backend doesn't return isReacted yet, logic here is optimistic and basic
+
+    const reactionType = type.toUpperCase() as ReactionType;
+
+    this.reactionService.createReaction(post.postId, reactionType).subscribe({
+      next: () => {
+        console.log('Reaction created');
+        // Update UI
+        // Ideally we should know if we liked or unliked.
+        // For now, assume it's like and increment.
+        // In real app, we check if user already reacted.
+        post.reactionCount++;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to react', err);
+      }
+    });
+  }
+
+  // ---------- HELPERS ----------
   private getFileType(file: File): 'image' | 'video' | 'document' {
     if (file.type.startsWith('image/')) return 'image';
     if (file.type.startsWith('video/')) return 'video';
     return 'document';
   }
 
-  getPrivacyIcon(privacy: PrivacyMode): string {
-    const icons = {
-      public: '🌐',
-      friends: '👥',
-      private: '🔒'
+  getPrivacyIcon(privacy: string): string {
+    const icons: { [key: string]: string } = {
+      'PUBLIC': '🌐',
+      'FRIENDS_ONLY': '👥',
+      'PRIVATE': '🔒'
     };
-    return icons[privacy];
+    return icons[privacy] || '🌐';
   }
 
-  getPrivacyLabel(privacy: PrivacyMode): string {
-    const labels = {
-      public: 'Công khai',
-      friends: 'Bạn bè',
-      private: 'Riêng tư'
+  getPrivacyLabel(privacy: string): string {
+    const labels: { [key: string]: string } = {
+      'PUBLIC': 'Công khai',
+      'FRIENDS_ONLY': 'Bạn bè',
+      'PRIVATE': 'Riêng tư'
     };
-    return labels[privacy];
+    return labels[privacy] || 'Công khai';
   }
 
-  // ---------- REACTION ----------
-  // Toggle reaction: add or remove user's reaction and update counts
-  toggleReaction(post: Post, type: 'like' | 'love'): void {
-    const set = type === 'like' ? this.likedPostIds : this.lovedPostIds;
-    if (set.has(post.id)) {
-      // remove reaction
-      set.delete(post.id);
-      post.reactions[type] = Math.max(0, post.reactions[type] - 1);
-    } else {
-      // add reaction
-      set.add(post.id);
-      post.reactions[type] = (post.reactions[type] || 0) + 1;
-    }
+  getTimeAgo(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (seconds < 60) return 'Vừa xong';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} phút trước`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} giờ trước`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)} ngày trước`;
+
+    return date.toLocaleDateString('vi-VN');
   }
 
-  // ---------- COMMENT ----------
-  getCommentForm(postId: number): FormGroup {
-    if (!this.commentForms.has(postId)) {
-      this.commentForms.set(
-        postId,
-        this.fb.group({
-          content: ['', Validators.required],
-        })
-      );
-    }
-    return this.commentForms.get(postId)!;
-  }
-
+  // Mock methods for template compatibility
   addComment(post: Post): void {
-    const form = this.getCommentForm(post.id);
-    if (form.invalid) return;
-
-    const comment: Comment = {
-      id: Date.now(),
-      author: 'You',
-      content: form.value.content,
-      time: 'Vừa xong',
-      replies: [],
-    };
-
-    post.comments.push(comment);
-    form.reset();
-  }
-
-  // ---------- REPLY ----------
-  getReplyForm(commentId: number): FormGroup {
-    if (!this.replyForms.has(commentId)) {
-      this.replyForms.set(
-        commentId,
-        this.fb.group({
-          content: ['', Validators.required],
-        })
-      );
-    }
-    return this.replyForms.get(commentId)!;
-  }
-
-  addReply(comment: Comment): void {
-    const form = this.getReplyForm(comment.id);
-    if (form.invalid) return;
-
-    comment.replies.push({
-      id: Date.now(),
-      author: 'You',
-      content: form.value.content,
-      time: 'Vừa xong',
-      replies: [],
-    });
-
-    form.reset();
+    console.log('Add comment clicked for post:', post.postId);
   }
 }
 
 export default HomeComponent;
-

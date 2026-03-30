@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
-import { AuthService } from '../../services/auth.service';
-import { RegisterRequest } from '../../models/user.model';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ReactiveFormsModule, FormBuilder, Validators} from '@angular/forms';
+import {Router, RouterModule} from '@angular/router';
+import {HttpClientModule} from '@angular/common/http';
+import {AuthService} from '../../services/auth.service';
+import {RegisterRequest} from '../../models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -44,7 +44,7 @@ export class RegisterComponent {
     const confirmPassword = form.get('confirmPassword');
 
     if (password && confirmPassword && password.value !== confirmPassword.value) {
-      return { passwordMismatch: true };
+      return {passwordMismatch: true};
     }
     return null;
   }

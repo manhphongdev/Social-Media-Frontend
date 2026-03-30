@@ -2,198 +2,198 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile API Test</title>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Profile API Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
 
-        .card {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
 
-        h1 {
-            color: #333;
-            margin-top: 0;
-        }
+    h1 {
+      color: #333;
+      margin-top: 0;
+    }
 
-        h2 {
-            color: #666;
-            font-size: 18px;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 8px;
-        }
+    h2 {
+      color: #666;
+      font-size: 18px;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 8px;
+    }
 
-        button {
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            margin: 5px;
-        }
+    button {
+      background: #6366f1;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+    }
 
-        button:hover {
-            background: #4f46e5;
-        }
+    button:hover {
+      background: #4f46e5;
+    }
 
-        .success {
-            color: #10b981;
-        }
+    .success {
+      color: #10b981;
+    }
 
-        .error {
-            color: #ef4444;
-        }
+    .error {
+      color: #ef4444;
+    }
 
-        .info {
-            color: #6366f1;
-        }
+    .info {
+      color: #6366f1;
+    }
 
-        pre {
-            background: #f9fafb;
-            padding: 12px;
-            border-radius: 6px;
-            overflow-x: auto;
-            border-left: 3px solid #6366f1;
-        }
+    pre {
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      border-left: 3px solid #6366f1;
+    }
 
-        #result {
-            margin-top: 16px;
-        }
+    #result {
+      margin-top: 16px;
+    }
 
-        input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 12px;
-        }
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 12px;
+    }
 
-        .label {
-            display: block;
-            margin: 12px 0 4px;
-            font-weight: 600;
-            color: #666;
-        }
-    </style>
+    .label {
+      display: block;
+      margin: 12px 0 4px;
+      font-weight: 600;
+      color: #666;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="card">
-        <h1>🧪 Profile API Test Tool</h1>
-        <p>Test profile API endpoint với access token</p>
-    </div>
+<div class="card">
+  <h1>🧪 Profile API Test Tool</h1>
+  <p>Test profile API endpoint với access token</p>
+</div>
 
-    <div class="card">
-        <h2>1. Check LocalStorage</h2>
-        <button onclick="checkLocalStorage()">Check Token & User</button>
-        <div id="storageResult"></div>
-    </div>
+<div class="card">
+  <h2>1. Check LocalStorage</h2>
+  <button onclick="checkLocalStorage()">Check Token & User</button>
+  <div id="storageResult"></div>
+</div>
 
-    <div class="card">
-        <h2>2. Test API Call</h2>
+<div class="card">
+  <h2>2. Test API Call</h2>
 
-        <label class="label">Access Token (auto-fill from localStorage):</label>
-        <input type="text" id="tokenInput" placeholder="Bearer token will appear here">
+  <label class="label">Access Token (auto-fill from localStorage):</label>
+  <input id="tokenInput" placeholder="Bearer token will appear here" type="text">
 
-        <br><br>
-        <button onclick="testProfileAPI()">🚀 Test GET /users/profile/me</button>
-        <button onclick="clearResult()">Clear Result</button>
+  <br><br>
+  <button onclick="testProfileAPI()">🚀 Test GET /users/profile/me</button>
+  <button onclick="clearResult()">Clear Result</button>
 
-        <div id="result"></div>
-    </div>
+  <div id="result"></div>
+</div>
 
-    <div class="card">
-        <h2>3. CORS Test</h2>
-        <button onclick="testCORS()">Test CORS Configuration</button>
-        <div id="corsResult"></div>
-    </div>
+<div class="card">
+  <h2>3. CORS Test</h2>
+  <button onclick="testCORS()">Test CORS Configuration</button>
+  <div id="corsResult"></div>
+</div>
 
-    <script>
-        // Auto-fill token on load
-        window.onload = function () {
-            const token = localStorage.getItem('accessToken');
-            if (token) {
-                document.getElementById('tokenInput').value = token;
-            }
-        };
+<script>
+  // Auto-fill token on load
+  window.onload = function () {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      document.getElementById('tokenInput').value = token;
+    }
+  };
 
-        function checkLocalStorage() {
-            const result = document.getElementById('storageResult');
-            const token = localStorage.getItem('accessToken');
-            const user = localStorage.getItem('currentUser');
+  function checkLocalStorage() {
+    const result = document.getElementById('storageResult');
+    const token = localStorage.getItem('accessToken');
+    const user = localStorage.getItem('currentUser');
 
-            let html = '<div style="margin-top: 12px;">';
+    let html = '<div style="margin-top: 12px;">';
 
-            if (token) {
-                html += `<p class="success">✅ Access Token: EXISTS</p>`;
-                html += `<pre>${token.substring(0, 50)}...${token.substring(token.length - 10)}</pre>`;
-            } else {
-                html += `<p class="error">❌ Access Token: NOT FOUND</p>`;
-                html += `<p>Please login first!</p>`;
-            }
+    if (token) {
+      html += `<p class="success">✅ Access Token: EXISTS</p>`;
+      html += `<pre>${token.substring(0, 50)}...${token.substring(token.length - 10)}</pre>`;
+    } else {
+      html += `<p class="error">❌ Access Token: NOT FOUND</p>`;
+      html += `<p>Please login first!</p>`;
+    }
 
-            if (user) {
-                html += `<p class="success">✅ Current User: EXISTS</p>`;
-                html += `<pre>${user}</pre>`;
-            } else {
-                html += `<p class="error">❌ Current User: NOT FOUND</p>`;
-            }
+    if (user) {
+      html += `<p class="success">✅ Current User: EXISTS</p>`;
+      html += `<pre>${user}</pre>`;
+    } else {
+      html += `<p class="error">❌ Current User: NOT FOUND</p>`;
+    }
 
-            html += '</div>';
-            result.innerHTML = html;
-        }
+    html += '</div>';
+    result.innerHTML = html;
+  }
 
-        async function testProfileAPI() {
-            const resultDiv = document.getElementById('result');
-            const token = document.getElementById('tokenInput').value;
+  async function testProfileAPI() {
+    const resultDiv = document.getElementById('result');
+    const token = document.getElementById('tokenInput').value;
 
-            if (!token) {
-                resultDiv.innerHTML = '<p class="error">❌ No token found! Please login first.</p>';
-                return;
-            }
+    if (!token) {
+      resultDiv.innerHTML = '<p class="error">❌ No token found! Please login first.</p>';
+      return;
+    }
 
-            resultDiv.innerHTML = '<p class="info">⏳ Making API request...</p>';
+    resultDiv.innerHTML = '<p class="info">⏳ Making API request...</p>';
 
-            try {
-                const response = await fetch('http://localhost:8888/users/profile/me', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': '*/*'
-                    },
-                    credentials: 'include'
-                });
+    try {
+      const response = await fetch('http://localhost:8888/users/profile/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': '*/*'
+        },
+        credentials: 'include'
+      });
 
-                const data = await response.json();
+      const data = await response.json();
 
-                let html = `<h3>Response (Status: ${response.status})</h3>`;
+      let html = `<h3>Response (Status: ${response.status})</h3>`;
 
-                if (response.ok) {
-                    html += '<p class="success">✅ SUCCESS!</p>';
-                    html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-                } else {
-                    html += '<p class="error">❌ ERROR!</p>';
-                    html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-                }
+      if (response.ok) {
+        html += '<p class="success">✅ SUCCESS!</p>';
+        html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+      } else {
+        html += '<p class="error">❌ ERROR!</p>';
+        html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+      }
 
-                resultDiv.innerHTML = html;
+      resultDiv.innerHTML = html;
 
-            } catch (error) {
-                resultDiv.innerHTML = `
+    } catch (error) {
+      resultDiv.innerHTML = `
                     <h3 class="error">❌ Request Failed</h3>
                     <p>Error: ${error.message}</p>
                     <p><strong>Common causes:</strong></p>
@@ -203,53 +203,53 @@
                         <li>Network error</li>
                     </ul>
                 `;
-            }
+    }
+  }
+
+  async function testCORS() {
+    const resultDiv = document.getElementById('corsResult');
+    resultDiv.innerHTML = '<p class="info">⏳ Testing CORS...</p>';
+
+    try {
+      const response = await fetch('http://localhost:8888/users/profile/me', {
+        method: 'OPTIONS',
+        headers: {
+          'Access-Control-Request-Method': 'GET',
+          'Access-Control-Request-Headers': 'authorization'
         }
+      });
 
-        async function testCORS() {
-            const resultDiv = document.getElementById('corsResult');
-            resultDiv.innerHTML = '<p class="info">⏳ Testing CORS...</p>';
-
-            try {
-                const response = await fetch('http://localhost:8888/users/profile/me', {
-                    method: 'OPTIONS',
-                    headers: {
-                        'Access-Control-Request-Method': 'GET',
-                        'Access-Control-Request-Headers': 'authorization'
-                    }
-                });
-
-                const headers = {};
-                response.headers.forEach((value, key) => {
-                    if (key.startsWith('access-control')) {
-                        headers[key] = value;
-                    }
-                });
-
-                let html = '<h3>CORS Headers:</h3>';
-                if (Object.keys(headers).length > 0) {
-                    html += '<pre>' + JSON.stringify(headers, null, 2) + '</pre>';
-
-                    if (headers['access-control-allow-credentials'] === 'true') {
-                        html += '<p class="success">✅ Credentials allowed</p>';
-                    } else {
-                        html += '<p class="error">❌ Credentials NOT allowed</p>';
-                    }
-                } else {
-                    html += '<p class="error">❌ No CORS headers found - CORS not configured!</p>';
-                }
-
-                resultDiv.innerHTML = html;
-
-            } catch (error) {
-                resultDiv.innerHTML = `<p class="error">❌ CORS test failed: ${error.message}</p>`;
-            }
+      const headers = {};
+      response.headers.forEach((value, key) => {
+        if (key.startsWith('access-control')) {
+          headers[key] = value;
         }
+      });
 
-        function clearResult() {
-            document.getElementById('result').innerHTML = '';
+      let html = '<h3>CORS Headers:</h3>';
+      if (Object.keys(headers).length > 0) {
+        html += '<pre>' + JSON.stringify(headers, null, 2) + '</pre>';
+
+        if (headers['access-control-allow-credentials'] === 'true') {
+          html += '<p class="success">✅ Credentials allowed</p>';
+        } else {
+          html += '<p class="error">❌ Credentials NOT allowed</p>';
         }
-    </script>
+      } else {
+        html += '<p class="error">❌ No CORS headers found - CORS not configured!</p>';
+      }
+
+      resultDiv.innerHTML = html;
+
+    } catch (error) {
+      resultDiv.innerHTML = `<p class="error">❌ CORS test failed: ${error.message}</p>`;
+    }
+  }
+
+  function clearResult() {
+    document.getElementById('result').innerHTML = '';
+  }
+</script>
 </body>
 
 </html>

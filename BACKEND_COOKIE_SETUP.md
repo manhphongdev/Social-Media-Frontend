@@ -3,6 +3,7 @@
 ## ✅ Frontend đã cấu hình sẵn
 
 Frontend (Angular) đã được cấu hình để **nhận và gửi cookies** với mọi HTTP request:
+
 - ✅ `withCredentials: true` trong tất cả requests
 - ✅ HTTP Interceptor tự động thêm credentials
 - ✅ Cookies sẽ được browser tự động lưu và gửi kèm
@@ -29,7 +30,8 @@ public class CorsConfig implements WebMvcConfigurer {
 }
 ```
 
-**⚠️ LƯU Ý:** 
+**⚠️ LƯU Ý:**
+
 - Khi dùng `allowCredentials(true)`, **KHÔNG ĐƯỢC** dùng `allowedOrigins("*")`
 - Phải chỉ định cụ thể origin: `"http://localhost:4200"`
 
@@ -72,7 +74,8 @@ public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletRes
 }
 ```
 
-**Lưu ý:** 
+**Lưu ý:**
+
 - `accessToken` trả trong response body (frontend sẽ lưu localStorage)
 - `refreshToken` được set vào cookie (HttpOnly, secure)
 
@@ -124,17 +127,20 @@ public ResponseEntity<?> logout(HttpServletResponse response) {
 ## 🧪 Cách kiểm tra
 
 ### 1. **Chrome DevTools**
+
 1. Mở DevTools (F12)
 2. Tab **Application** > **Cookies** > `http://localhost:4200`
 3. Sau khi login, phải thấy cookie `refreshToken`
 
 ### 2. **Network Tab**
+
 1. Tab **Network**
 2. Click vào request `/auth/login`
 3. Tab **Headers** > **Response Headers**
 4. Phải thấy: `Set-Cookie: refreshToken=...`
 
 ### 3. **Subsequent Requests**
+
 1. Mọi request sau đó (từ Angular) sẽ tự động gửi kèm cookie
 2. Tab **Network** > Click request bất kỳ
 3. Tab **Headers** > **Request Headers**
@@ -143,6 +149,7 @@ public ResponseEntity<?> logout(HttpServletResponse response) {
 ## ❌ Các lỗi thường gặp
 
 ### Lỗi 1: CORS Error
+
 ```
 Access to XMLHttpRequest at 'http://localhost:8888/auth/login' from origin 
 'http://localhost:4200' has been blocked by CORS policy: 
@@ -150,22 +157,27 @@ The value of the 'Access-Control-Allow-Credentials' header in the response is ''
 which must be 'true' when the request's credentials mode is 'include'.
 ```
 
-**Giải pháp:** 
+**Giải pháp:**
+
 - Set `allowCredentials(true)` trong CORS config
 - **KHÔNG dùng** `allowedOrigins("*")`
 
 ### Lỗi 2: Cookie không được set
+
 **Nguyên nhân:**
+
 - Backend không call `response.addCookie()`
 - Cookie attributes không đúng (domain, path)
 - SameSite policy blocking
 
 **Giải pháp:**
+
 - Check response headers xem có `Set-Cookie` không
 - Set `SameSite=Lax` hoặc `None` (nếu cross-site)
 - Nếu `SameSite=None` thì bắt buộc `Secure=true` (HTTPS)
 
 ### Lỗi 3: Cookie bị xóa sau khi close browser
+
 **Nguyên nhân:** MaxAge không được set
 
 **Giải pháp:** Set `setMaxAge(seconds)` cho cookie
@@ -177,7 +189,7 @@ which must be 'true' when the request's credentials mode is 'include'.
 - [ ] Login endpoint set `refreshToken` cookie
 - [ ] Cookie có `HttpOnly=true` (bảo mật)
 - [ ] Cookie có `MaxAge` phù hợp (ví dụ: 7 days)
-- [ ] Cookie có `Path="/"` 
+- [ ] Cookie có `Path="/"`
 - [ ] Refresh endpoint đọc cookie và validate
 - [ ] Logout endpoint clear cookie bằng `setMaxAge(0)`
 - [ ] Test bằng DevTools thấy cookie được set
@@ -185,6 +197,7 @@ which must be 'true' when the request's credentials mode is 'include'.
 ## 🎯 Kết quả mong đợi
 
 Sau khi cấu hình đúng:
+
 1. ✅ User login → Cookie `refreshToken` được set
 2. ✅ Mọi request API sau đó tự động gửi kèm cookie
 3. ✅ Backend đọc được refreshToken từ cookie

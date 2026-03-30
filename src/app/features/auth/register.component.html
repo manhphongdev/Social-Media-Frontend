@@ -13,41 +13,41 @@
       {{ successMessage }}
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()">
+    <form (ngSubmit)="submit()" [formGroup]="form">
       <!-- Full width fields -->
       <label class="full-width">
         Họ & Tên
-        <input formControlName="name" type="text" placeholder="Nguyễn Văn A" />
+        <input formControlName="name" placeholder="Nguyễn Văn A" type="text"/>
       </label>
 
       <label class="full-width">
         Email
-        <input formControlName="email" type="email" placeholder="your@email.com" autocomplete="email" />
+        <input autocomplete="email" formControlName="email" placeholder="your@email.com" type="email"/>
       </label>
 
       <!-- Two column layout -->
       <div class="form-row">
         <label>
           Mật khẩu
-          <input formControlName="password" type="password" placeholder="••••••••" autocomplete="new-password" />
+          <input autocomplete="new-password" formControlName="password" placeholder="••••••••" type="password"/>
         </label>
 
         <label>
           Xác nhận mật khẩu
-          <input formControlName="confirmPassword" type="password" placeholder="••••••••" autocomplete="new-password" />
+          <input autocomplete="new-password" formControlName="confirmPassword" placeholder="••••••••" type="password"/>
         </label>
       </div>
 
       <div class="form-row">
         <label>
           Ngày sinh
-          <input formControlName="dateOfBirth" type="date" autocomplete="dateOfBirth" />
+          <input autocomplete="dateOfBirth" formControlName="dateOfBirth" type="date"/>
         </label>
 
         <label>
           Giới tính
           <select formControlName="gender">
-            <option value="" disabled selected>Chọn giới tính</option>
+            <option disabled selected value="">Chọn giới tính</option>
             <option value="MALE">Nam</option>
             <option value="FEMALE">Nữ</option>
             <option value="OTHER">Khác</option>
@@ -56,7 +56,7 @@
       </div>
 
       <div class="actions">
-        <button type="submit" [disabled]="form.invalid || loading">
+        <button [disabled]="form.invalid || loading" type="submit">
           <span *ngIf="loading">Đang xử lý...</span>
           <span *ngIf="!loading">Tạo tài khoản</span>
         </button>

@@ -1,133 +1,171 @@
 <div class="messages-container">
-    <!-- Sidebar: Danh sách cuộc trò chuyện -->
-    <aside class="conversations-sidebar">
-        <div class="sidebar-header">
-            <h2>Tin nhắn</h2>
-            <button class="new-message-btn" title="Tin nhắn mới">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-            </button>
+  <!-- Sidebar: Danh sách cuộc trò chuyện -->
+  <aside [class.mobile-visible]="!selectedConversation" class="conversations-sidebar">
+    <div class="sidebar-header">
+      <h2>Tin nhắn</h2>
+      <button class="new-message-btn" title="Tin nhắn mới">
+        <svg fill="none" height="20" stroke="currentColor" viewBox="0 0 24 24" width="20"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <svg fill="none" height="18" stroke="currentColor" viewBox="0 0 24 24" width="18"
+           xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="2"/>
+      </svg>
+      <input placeholder="Tìm kiếm..." type="text"/>
+    </div>
+
+    <!-- Conversations List -->
+    <div class="conversations-list">
+      <div (click)="selectConversation(conversation)" *ngFor="let conversation of conversations"
+           [class.active]="selectedConversation?.id === conversation.id"
+           class="conversation-item">
+        <div class="avatar-wrapper">
+          <div class="avatar">{{ getInitials(conversation.userName) }}</div>
+          <span *ngIf="conversation.isOnline" class="online-indicator"></span>
         </div>
 
-        <!-- Search Box -->
-        <div class="search-box">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input type="text" placeholder="Tìm kiếm..." />
-        </div>
-
-        <!-- Conversations List -->
-        <div class="conversations-list">
-            <div *ngFor="let conversation of conversations" class="conversation-item"
-                [class.active]="selectedConversation?.id === conversation.id"
-                (click)="selectConversation(conversation)">
-                <div class="avatar-wrapper">
-                    <div class="avatar">{{ getInitials(conversation.userName) }}</div>
-                    <span class="online-indicator" *ngIf="conversation.isOnline"></span>
-                </div>
-
-                <div class="conversation-info">
-                    <div class="conversation-header">
-                        <span class="user-name">{{ conversation.userName }}</span>
-                        <span class="time">{{ formatTime(conversation.lastMessageTime) }}</span>
-                    </div>
-                    <div class="last-message">
-                        <span class="message-text">{{ conversation.lastMessage }}</span>
-                        <span class="unread-badge" *ngIf="conversation.unreadCount > 0">
+        <div class="conversation-info">
+          <div class="conversation-header">
+            <span class="user-name">{{ conversation.userName }}</span>
+            <span class="time">{{ formatTime(conversation.lastMessageTime) }}</span>
+          </div>
+          <div class="last-message">
+            <span class="message-text">{{ conversation.lastMessage }}</span>
+            <span *ngIf="conversation.unreadCount > 0" class="unread-badge">
                             {{ conversation.unreadCount }}
                         </span>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-    </aside>
+      </div>
+    </div>
+  </aside>
 
-    <!-- Main Chat Area -->
-    <main class="chat-area">
-        <!-- No conversation selected -->
-        <div class="empty-state" *ngIf="!selectedConversation">
-            <div class="empty-icon">💬</div>
-            <h3>Chọn một cuộc trò chuyện</h3>
-            <p>Chọn từ danh sách bên trái để bắt đầu nhắn tin</p>
+  <!-- Main Chat Area -->
+  <main [class.mobile-hidden]="!selectedConversation" class="chat-area">
+    <!-- No conversation selected -->
+    <div *ngIf="!selectedConversation" class="empty-state">
+      <div class="empty-icon">💬</div>
+      <h3>Chọn một cuộc trò chuyện</h3>
+      <p>Chọn từ danh sách bên trái để bắt đầu nhắn tin</p>
+    </div>
+
+    <!-- Conversation selected -->
+    <div *ngIf="selectedConversation" class="chat-content">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="header-user-info">
+          <button (click)="backToConversationList()" class="back-btn" title="Quay lại" type="button">
+            <svg fill="none" height="20" stroke="currentColor" viewBox="0 0 24 24" width="20"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+            </svg>
+          </button>
+          <div class="avatar">{{ getInitials(selectedConversation.userName) }}</div>
+          <div>
+            <div class="user-name">{{ selectedConversation.userName }}</div>
+            <div [class.online]="selectedConversation.isOnline" class="status">
+              {{ selectedConversation.isOnline ? 'Đang hoạt động' : 'Không hoạt động' }}
+            </div>
+          </div>
         </div>
 
-        <!-- Conversation selected -->
-        <div class="chat-content" *ngIf="selectedConversation">
-            <!-- Chat Header -->
-            <div class="chat-header">
-                <div class="header-user-info">
-                    <div class="avatar">{{ getInitials(selectedConversation.userName) }}</div>
-                    <div>
-                        <div class="user-name">{{ selectedConversation.userName }}</div>
-                        <div class="status" [class.online]="selectedConversation.isOnline">
-                            {{ selectedConversation.isOnline ? 'Đang hoạt động' : 'Không hoạt động' }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chat-actions">
-                    <button title="Gọi điện">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                    </button>
-                    <button title="Video call">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                    </button>
-                    <button title="Thông tin">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Messages -->
-            <div class="messages-container-scroll">
-                <div class="messages">
-                    <div *ngFor="let message of selectedConversation.messages" class="message"
-                        [class.current-user]="message.isCurrentUser">
-                        <div class="message-bubble">
-                            <div class="message-content">{{ message.content }}</div>
-                            <div class="message-time">{{ formatMessageTime(message.timestamp) }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Message Input -->
-            <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="message-input">
-                <button type="button" class="attachment-btn" title="Đính kèm">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                    </svg>
-                </button>
-
-                <input type="text" formControlName="content" placeholder="Nhập tin nhắn..." autocomplete="off" />
-
-                <button type="submit" class="send-btn" [disabled]="messageForm.invalid" title="Gửi">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                </button>
-            </form>
+        <div class="chat-actions">
+          <button title="Gọi điện">
+            <svg fill="none" height="20" stroke="currentColor" viewBox="0 0 24 24" width="20"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"/>
+            </svg>
+          </button>
+          <button title="Video call">
+            <svg fill="none" height="20" stroke="currentColor" viewBox="0 0 24 24" width="20"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"/>
+            </svg>
+          </button>
+          <button title="Thông tin">
+            <svg fill="none" height="20" stroke="currentColor" viewBox="0 0 24 24" width="20"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"/>
+            </svg>
+          </button>
         </div>
-    </main>
+      </div>
+
+      <!-- Messages -->
+      <div class="messages-container-scroll">
+        <div *ngIf="isLoadingMessages" class="messages-loading">Đang tải tin nhắn...</div>
+        <div class="messages">
+          <div *ngFor="let message of selectedConversation.messages" [class.current-user]="message.isCurrentUser"
+               class="message">
+            <div class="message-bubble">
+              <div *ngIf="message.content" class="message-content">{{ message.content }}</div>
+
+              <div *ngIf="message.mediaUrl" class="message-media">
+                <img *ngIf="isImageUrl(message.mediaUrl)" [src]="message.mediaUrl" alt="Attachment"/>
+                <video *ngIf="isVideoUrl(message.mediaUrl)" [src]="message.mediaUrl" controls preload="metadata"></video>
+                <a *ngIf="!isImageUrl(message.mediaUrl) && !isVideoUrl(message.mediaUrl)"
+                   [href]="message.mediaUrl"
+                   rel="noopener noreferrer"
+                   target="_blank">
+                  Mở tệp đính kèm
+                </a>
+              </div>
+
+              <div class="message-time">{{ formatMessageTime(message.timestamp) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="mediaPreviews.length > 0" class="selected-media-list">
+        <div *ngFor="let media of mediaPreviews; let i = index; trackBy: trackByPreviewUrl" class="selected-media-item">
+          <div class="selected-media-preview">
+            <img *ngIf="isImageFile(media.file)" [src]="media.previewUrl" alt="Selected image"/>
+            <video *ngIf="isVideoFile(media.file)" [src]="media.previewUrl" muted preload="metadata"></video>
+            <div *ngIf="!isImageFile(media.file) && !isVideoFile(media.file)" class="file-placeholder">FILE</div>
+          </div>
+
+          <div class="selected-media-meta">
+            <div class="file-name">{{ media.file.name }}</div>
+            <div class="file-size">{{ formatFileSize(media.file.size) }}</div>
+          </div>
+
+          <button (click)="removeMedia(i)" class="remove-media-btn" title="Xóa tệp" type="button">✕</button>
+        </div>
+      </div>
+
+      <!-- Message Input -->
+      <form (ngSubmit)="sendMessage()" [formGroup]="messageForm" class="message-input">
+        <button (click)="mediaInput.click()" class="attachment-btn" title="Đính kèm" type="button">
+          <svg fill="none" height="20" stroke="currentColor" viewBox="0 0 24 24" width="20"
+               xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="2"/>
+          </svg>
+        </button>
+
+        <input #mediaInput (change)="onMediaSelected($event)" accept="image/*,video/*" hidden multiple type="file"/>
+
+        <input autocomplete="off" formControlName="content" placeholder="Nhập tin nhắn..." type="text"/>
+
+        <button [disabled]="!canSendMessage()" class="send-btn" title="Gửi" type="submit">
+          <svg fill="none" height="20" stroke="currentColor" viewBox="0 0 24 24" width="20"
+               xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="2"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </main>
 </div>

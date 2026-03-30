@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
-import { AuthService } from '../../services/auth.service';
-import { LoginRequest } from '../../models/user.model';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router, RouterModule} from '@angular/router';
+import {HttpClientModule} from '@angular/common/http';
+import {AuthService} from '../../services/auth.service';
+import {LoginRequest} from '../../models/user.model';
+import {WebSocketService} from '../../services/websocket.service';
 
 @Component({
   selector: 'app-login',
@@ -22,10 +23,11 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private wsService: WebSocketService
   ) {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(20)]]
     });
   }
@@ -41,19 +43,26 @@ export class LoginComponent {
     this.successMessage = '';
 
     const loginRequest: LoginRequest = {
-      email: this.form.value.email,
+      username: this.form.value.username,
       password: this.form.value.password
     };
 
     this.authService.login(loginRequest).subscribe({
       next: (response) => {
+        console.log('Login response:', response);
         this.loading = false;
         this.successMessage = response.message || 'Đăng nhập thành công!';
+        console.log('Success message set to:', this.successMessage);
+
+        // Connect to WebSocket if token is available
+        if (response.data?.accessToken) {
+          this.wsService.connect(response.data.accessToken);
+        }
 
         // Navigate to home page after successful login
         setTimeout(() => {
           this.router.navigateByUrl('/');
-        }, 1000);
+        }, 2000); // Increased from 1000ms to 2000ms to show success message longer
       },
       error: (error) => {
         this.loading = false;

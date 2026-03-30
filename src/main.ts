@@ -1,7 +1,8 @@
-import { platformBrowser } from '@angular/platform-browser';
-import { AppModule } from './app/app-module';
+import {platformBrowser} from '@angular/platform-browser';
+import {AppModule} from './app/app-module';
 
-platformBrowser().bootstrapModule(AppModule, {
-  
-})
+// Polyfill for sockjs-client and stomp
+(window as any).global = window;
+
+platformBrowser().bootstrapModule(AppModule, {})
   .catch(err => console.error(err));

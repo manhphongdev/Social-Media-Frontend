@@ -1,33 +1,41 @@
-export interface ReactionCount {
-  like: number;
-  love: number;
-}
-
-export interface Comment {
+// Author information in a post
+export interface PostAuthor {
   id: number;
-  author: string;
-  content: string;
-  time: string;
-  replies: Comment[];
-}
-
-export type PrivacyMode = 'public' | 'friends' | 'private';
-
-export interface Attachment {
-  id: string;
-  type: 'image' | 'video' | 'document';
-  url: string;
   name: string;
-  size?: number;
+  avatarUrl?: string;
 }
 
+// Privacy settings matching backend enum
+export type PostPrivacy = 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
+
+// Post response from backend (CRUDPostResponse)
 export interface Post {
-  id: number;
-  author: string;
-  content: string;
-  time: string;
-  reactions: ReactionCount;
-  comments: Comment[];
-  privacy: PrivacyMode;
-  attachments?: Attachment[];
+  postId: number;
+  author: PostAuthor;
+  caption: string;
+  mediaUrl: string[];
+  privacy: PostPrivacy;
+  reactionCount: number;
+  commentCount: number;
+  createdAt: string;
+}
+
+// Cursor-based pagination response
+export interface CursorPageResponse<T> {
+  content: T[];
+  nextCursor: string | null;
+  hasNext: boolean;
+}
+
+// API Response wrapper
+export interface PostResponse {
+  status: number;
+  message: string;
+  data: Post;
+}
+
+export interface PostsResponse {
+  status: number;
+  message: string;
+  data: CursorPageResponse<Post>;
 }

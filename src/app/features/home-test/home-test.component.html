@@ -1,0 +1,82 @@
+<div class="test-home-container">
+  <header class="home-header">
+    <h1>Test Home (API /all)</h1>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="loadingPosts" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading posts...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loadingPosts" class="error-state">
+    <p>{{ error }}</p>
+    <button (click)="loadPosts()">Retry</button>
+  </div>
+
+  <!-- FEED -->
+  <section *ngIf="!loadingPosts" class="feed">
+    <!-- No Posts -->
+    <div *ngIf="posts.length === 0 && !error" class="no-posts">
+      <p>No posts found from API /all</p>
+    </div>
+
+    <!-- Posts List -->
+    <div *ngFor="let post of posts" class="post">
+      <!-- Post Meta Header -->
+      <div class="post-header">
+        <div *ngIf="!post.author.avatarUrl" class="avatar-placeholder">
+          {{ post.author.name ? post.author.name[0] : 'U' }}
+        </div>
+        <img *ngIf="post.author.avatarUrl" [src]="post.author.avatarUrl" alt="Avatar" class="avatar-img"/>
+        <div>
+          <div class="post-author">{{ post.author.name }}</div>
+          <div class="post-meta">
+            {{ getTimeAgo(post.createdAt) }} ·
+            <span class="privacy-badge">
+                            {{ getPrivacyLabel(post.privacy) }}
+                        </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="post-content">{{ post.caption }}</div>
+
+      <!-- Media -->
+      <div *ngIf="post.mediaUrl && post.mediaUrl.length > 0" class="post-media">
+        <div [class.double]="post.mediaUrl.length === 2" [class.multiple]="post.mediaUrl.length > 2"
+             [class.single]="post.mediaUrl.length === 1" class="media-grid">
+          <img *ngFor="let url of post.mediaUrl.slice(0, 4)" [src]="url" alt="Post media"
+               class="media-item"/>
+          <div *ngIf="post.mediaUrl.length > 4" class="media-overlay">
+            +{{ post.mediaUrl.length - 4 }}
+          </div>
+        </div>
+      </div>
+
+      <!-- REACTIONS -->
+      <div class="reactions">
+        <button (click)="toggleReaction(post, 'like')">
+          👍 {{ post.reactionCount }} Like
+        </button>
+        <button (click)="toggleCommentSection(post)">
+          💬 {{ post.commentCount }} Comment
+        </button>
+      </div>
+
+      <!-- COMMENTS SECTION -->
+      <div class="comments-section">
+        <!-- Input -->
+        <div class="comment-input-container">
+          <div class="avatar-placeholder" style="width: 32px; height: 32px; font-size: 12px;">Me</div>
+          <textarea class="comment-input" placeholder="Write a comment..."
+                    [attr.id]="'comment-input-' + post.postId"
+                    (keydown.enter)="submitComment(post, $event)"></textarea>
+          <button class="send-btn" (click)="submitComment(post)">Send</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

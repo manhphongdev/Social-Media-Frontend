@@ -1,8 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProfileService } from '../../services/profile.service';
-import { User } from '../../models/user.model';
+import {Component, OnInit, ChangeDetectorRef, HostListener} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ProfileService} from '../../services/profile.service';
+import {PostService} from '../../services/post.service';
+import {User} from '../../models/user.model';
+import {Post, CursorPageResponse} from '../../models/post.model';
 
 @Component({
   selector: 'app-profile',
@@ -27,8 +29,17 @@ export class ProfileComponent implements OnInit {
   editForm: FormGroup;
   savingProfile = false;
 
+  // Posts state
+  posts: Post[] = [];
+  loadingPosts = false;
+  postsError = '';
+  nextCursor: string | null = null;
+  hasMorePosts = false;
+  isLoadingMore = false;
+
   constructor(
     private profileService: ProfileService,
+    private postService: PostService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder
   ) {
@@ -43,6 +54,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProfile();
+    this.loadPosts();
   }
 
   loadProfile(): void {
@@ -255,6 +267,99 @@ export class ProfileComponent implements OnInit {
       'OTHER': 'Khác'
     };
     return gender ? genderMap[gender] : 'Chưa cập nhật';
+  }
+
+  /**
+   * Load posts with cursor-based pagination
+   */
+  loadPosts(cursor?: string): void {
+    if (cursor) {
+      this.isLoadingMore = true;
+    } else {
+      this.loadingPosts = true;
+      this.posts = [];
+    }
+    this.postsError = '';
+
+    console.log('📚 Loading posts with cursor:', cursor || 'initial');
+
+    this.postService.getPostsWithCursor(cursor, 10).subscribe({
+      next: (response: CursorPageResponse<Post>) => {
+        console.log('✅ Posts loaded:', response);
+
+        if (cursor) {
+          // Append to existing posts
+          this.posts = [...this.posts, ...response.content];
+        } else {
+          // Initial load
+          this.posts = response.content;
+        }
+
+        this.nextCursor = response.nextCursor;
+        this.hasMorePosts = response.hasNext;
+        this.loadingPosts = false;
+        this.isLoadingMore = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('❌ Error loading posts:', error);
+        this.postsError = 'Không thể tải bài viết. Vui lòng thử lại.';
+        this.loadingPosts = false;
+        this.isLoadingMore = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  /**
+   * Load more posts (infinite scroll)
+   */
+  loadMorePosts(): void {
+    if (this.hasMorePosts && !this.isLoadingMore && this.nextCursor) {
+      this.loadPosts(this.nextCursor);
+    }
+  }
+
+  /**
+   * Detect scroll to bottom for infinite scrolling
+   */
+  @HostListener('window:scroll')
+  onScroll(): void {
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    // Load more when user scrolls to 80% of the page
+    if (scrollPosition >= documentHeight * 0.8) {
+      this.loadMorePosts();
+    }
+  }
+
+  /**
+   * Get privacy badge text
+   */
+  getPrivacyText(privacy: string): string {
+    const privacyMap: { [key: string]: string } = {
+      'PUBLIC': 'Công khai',
+      'FRIENDS_ONLY': 'Bạn bè',
+      'PRIVATE': 'Riêng tư'
+    };
+    return privacyMap[privacy] || privacy;
+  }
+
+  /**
+   * Format time ago
+   */
+  getTimeAgo(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (seconds < 60) return 'Vừa xong';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} phút trước`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} giờ trước`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)} ngày trước`;
+
+    return date.toLocaleDateString('vi-VN');
   }
 }
 

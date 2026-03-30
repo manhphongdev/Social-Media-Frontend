@@ -2,16 +2,97 @@
   <div class="header">
     <h2>Thông báo</h2>
     <div class="actions">
-      <button (click)="markAllRead()">Đánh dấu đã đọc</button>
+      <button (click)="refresh()" [disabled]="loading" class="refresh-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+        Làm mới
+      </button>
+      <button (click)="markAllRead()" [disabled]="loading || notifications.length === 0">
+        Đánh dấu đã đọc
+      </button>
     </div>
   </div>
 
-  <ul class="list">
-    <li *ngFor="let n of notifications" [class.read]="n.read">
-      <div class="title">{{ n.title }}</div>
-      <div class="meta">{{ n.time }}</div>
-      <button class="remove" (click)="remove(n.id)">Xóa</button>
+  <!-- Error message -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading && notifications.length === 0" class="loading-container">
+    <div class="spinner"></div>
+    <p>Đang tải thông báo...</p>
+  </div>
+
+  <!-- Notifications list -->
+  <ul class="list" *ngIf="!loading || notifications.length > 0">
+    <li *ngFor="let n of notifications" [class.read]="n.isRead" (click)="onNotificationClick(n)"
+        class="notification-item">
+
+      <!-- User avatar if available -->
+      <div class="notification-avatar" *ngIf="n.fromUser">
+        <img *ngIf="n.fromUser.avatarUrl" [src]="n.fromUser.avatarUrl" [alt]="n.fromUser.name">
+        <div *ngIf="!n.fromUser.avatarUrl" class="avatar-placeholder">
+          {{ n.fromUser.name.charAt(0).toUpperCase() }}
+        </div>
+      </div>
+
+      <!-- Default icon if no user -->
+      <div class="notification-icon" *ngIf="!n.fromUser">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+      </div>
+
+      <!-- Notification content -->
+      <div class="notification-content">
+        <div class="notification-text">{{ getNotificationText(n) }}</div>
+        <div class="notification-meta">
+          <span class="notification-time">{{ getTimeDisplay(n.createdAt) }}</span>
+          <span class="notification-type" *ngIf="n.type">{{ n.type }}</span>
+        </div>
+      </div>
+
+      <!-- Unread indicator -->
+      <div class="unread-indicator" *ngIf="!n.isRead"></div>
+
+      <!-- Delete button -->
+      <button class="remove" (click)="remove(n.id); $event.stopPropagation()" title="Xóa thông báo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </button>
     </li>
   </ul>
-  <div *ngIf="notifications.length === 0">Không có thông báo</div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && notifications.length === 0" class="empty-state">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+    </svg>
+    <p>Không có thông báo</p>
+  </div>
+
+  <!-- Load more button -->
+  <div *ngIf="hasNext && !loading" class="load-more-container">
+    <button (click)="loadMore()" class="load-more-btn">
+      Tải thêm thông báo
+    </button>
+  </div>
+
+  <!-- Loading more indicator -->
+  <div *ngIf="loading && notifications.length > 0" class="loading-more">
+    <div class="spinner-small"></div>
+    <span>Đang tải...</span>
+  </div>
 </div>

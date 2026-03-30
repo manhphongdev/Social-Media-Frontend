@@ -8,7 +8,7 @@
   <!-- Error State -->
   <div *ngIf="error && !loading" class="error-state">
     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="10"></circle>
       <line x1="12" y1="8" x2="12" y2="12"></line>
       <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -30,9 +30,9 @@
               {{ getAvatarInitial() }}
             </div>
             <img *ngIf="profile.avatarUrl && !avatarPreview && !loadingPreview" [src]="profile.avatarUrl" alt="Avatar"
-              class="avatar-img" />
+                 class="avatar-img"/>
             <img *ngIf="avatarPreview && !loadingPreview" [src]="avatarPreview" alt="Preview"
-              class="avatar-img preview" />
+                 class="avatar-img preview"/>
 
             <!-- Loading Preview Spinner -->
             <div class="avatar-loading" *ngIf="loadingPreview">
@@ -43,7 +43,7 @@
             <!-- Upload Button Overlay -->
             <button class="avatar-upload-btn" (click)="triggerFileInput()" *ngIf="!avatarPreview && !loadingPreview">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                 <circle cx="12" cy="13" r="4"></circle>
               </svg>
@@ -53,14 +53,14 @@
             <div class="avatar-actions" *ngIf="avatarPreview">
               <button class="btn-upload" (click)="uploadAvatar()" [disabled]="uploadingAvatar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
                 {{ uploadingAvatar ? 'Đang tải...' : 'Lưu' }}
               </button>
               <button class="btn-cancel" (click)="cancelAvatarUpload()" [disabled]="uploadingAvatar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -71,7 +71,7 @@
 
           <!-- Hidden File Input -->
           <input type="file" id="avatarInput" accept="image/*" (change)="onAvatarSelected($event)"
-            style="display: none;" />
+                 style="display: none;"/>
         </div>
         <div class="user-details">
           <h1 class="user-name">{{ profile.name }}</h1>
@@ -87,7 +87,7 @@
         <h2>Thông tin cá nhân</h2>
         <button class="btn-edit" (click)="enterEditMode()" *ngIf="!isEditMode">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
           </svg>
@@ -106,7 +106,7 @@
           <div class="info-item">
             <div class="info-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
@@ -120,7 +120,7 @@
           <div class="info-item">
             <div class="info-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="16" y1="2" x2="16" y2="6"></line>
                 <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -136,7 +136,7 @@
           <div class="info-item">
             <div class="info-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5.52 19c.64-2.2 1.84-3 3.22-3h6.52c1.38 0 2.58.8 3.22 3"></path>
                 <circle cx="12" cy="10" r="3"></circle>
                 <circle cx="12" cy="12" r="10"></circle>
@@ -151,7 +151,7 @@
           <div class="info-item" *ngIf="profile.email">
             <div class="info-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
@@ -170,7 +170,7 @@
         <div class="form-group">
           <label for="name">Họ và tên <span class="required">*</span></label>
           <input type="text" id="name" formControlName="name" placeholder="Nhập họ tên của bạn"
-            [class.invalid]="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+                 [class.invalid]="editForm.get('name')?.invalid && editForm.get('name')?.touched">
           <div class="error-msg" *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched">
             Vui lòng nhập họ tên (tối thiểu 2 ký tự)
           </div>
@@ -207,6 +207,102 @@
         </div>
       </form>
 
+    </div>
+
+    <!-- Posts Section -->
+    <div class="posts-section">
+      <h2 class="section-title">Bài viết</h2>
+
+      <!-- Loading Posts -->
+      <div *ngIf="loadingPosts && posts.length === 0" class="posts-loading">
+        <div class="spinner"></div>
+        <p>Đang tải bài viết...</p>
+      </div>
+
+      <!-- Posts Error -->
+      <div *ngIf="postsError && posts.length === 0" class="posts-error">
+        <p>{{ postsError }}</p>
+        <button class="btn-retry" (click)="loadPosts()">Thử lại</button>
+      </div>
+
+      <!-- Posts Grid -->
+      <div *ngIf="posts.length > 0" class="posts-grid">
+        <div *ngFor="let post of posts" class="post-card">
+          <!-- Post Header -->
+          <div class="post-header">
+            <div class="post-author">
+              <div class="author-avatar" *ngIf="!post.author.avatarUrl">
+                {{ post.author.name.charAt(0).toUpperCase() }}
+              </div>
+              <img *ngIf="post.author.avatarUrl" [src]="post.author.avatarUrl" alt="Avatar" class="author-avatar-img"/>
+              <div class="author-info">
+                <h3 class="author-name">{{ post.author.name }}</h3>
+                <div class="post-meta">
+                  <span class="post-time">{{ getTimeAgo(post.createdAt) }}</span>
+                  <span class="privacy-badge">{{ getPrivacyText(post.privacy) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Post Caption -->
+          <div class="post-caption" *ngIf="post.caption">
+            <p>{{ post.caption }}</p>
+          </div>
+
+          <!-- Post Media -->
+          <div class="post-media" *ngIf="post.mediaUrl && post.mediaUrl.length > 0">
+            <div class="media-grid" [class.single]="post.mediaUrl.length === 1"
+                 [class.double]="post.mediaUrl.length === 2" [class.multiple]="post.mediaUrl.length > 2">
+              <img *ngFor="let url of post.mediaUrl.slice(0, 4)" [src]="url" alt="Post media" class="media-item"/>
+              <div *ngIf="post.mediaUrl.length > 4" class="media-overlay">
+                +{{ post.mediaUrl.length - 4 }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Post Stats -->
+          <div class="post-stats">
+            <div class="stat-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
+              </svg>
+              <span>{{ post.reactionCount }}</span>
+            </div>
+            <div class="stat-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>{{ post.commentCount }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Posts -->
+      <div *ngIf="!loadingPosts && posts.length === 0 && !postsError" class="no-posts">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <p>Chưa có bài viết nào</p>
+      </div>
+
+      <!-- Loading More -->
+      <div *ngIf="isLoadingMore" class="loading-more">
+        <div class="spinner-small"></div>
+        <p>Đang tải thêm...</p>
+      </div>
+
+      <!-- End of Posts -->
+      <div *ngIf="!hasMorePosts && posts.length > 0" class="end-of-posts">
+        <p>Đã hiển thị tất cả bài viết</p>
+      </div>
     </div>
   </div>
 </div>

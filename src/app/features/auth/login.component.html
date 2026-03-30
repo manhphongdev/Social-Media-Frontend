@@ -13,19 +13,19 @@
       {{ successMessage }}
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()">
+    <form (ngSubmit)="submit()" [formGroup]="form">
       <label>
-        Email
-        <input formControlName="email" type="email" placeholder="your@email.com" autocomplete="email" />
+        Username
+        <input autocomplete="username" formControlName="username" placeholder="Nhập username" type="text"/>
       </label>
 
       <label>
         Mật khẩu
-        <input formControlName="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <input autocomplete="current-password" formControlName="password" placeholder="••••••••" type="password"/>
       </label>
 
       <div class="actions">
-        <button type="submit" [disabled]="form.invalid || loading">
+        <button [disabled]="form.invalid || loading" type="submit">
           <span *ngIf="loading">Đang xử lý...</span>
           <span *ngIf="!loading">Đăng nhập</span>
         </button>
